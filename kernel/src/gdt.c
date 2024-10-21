@@ -5,7 +5,7 @@
 void init_gdt() {
     asm volatile ("cli" ::: "memory");
 
-    uint64_t gdt[5] = {
+    uint64_t gdt[4] = {
         0x0000000000000000, // null
         0x00AF9A000000FFFF, // kernel code
         0x00AF92000000FFFF, // kernel data
