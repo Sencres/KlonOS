@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <limine.h>
+#include <gdt.h>
 
 __attribute__((used, section(".requests")))
 static volatile LIMINE_BASE_REVISION(2);
@@ -183,21 +184,21 @@ size_t strlen(char *str) {
     return len;
 }
 
-void write_char(unsigned char c, size_t xoffset) {
+void write_char(unsigned char c, size_t xoffset, size_t yoffset) {
     volatile uint32_t *addr = framebuffer->address;
     
     for (size_t y = 0; y < 13; ++y) {
         for (size_t pixel = 0; pixel < 8; ++pixel) {
             if ((letters[c - 32][y] & (1 << (7 - pixel))) == 1 << (7 - pixel)) {
-                addr[(12 - y) * framebuffer->pitch / 4 + 8 * xoffset + pixel] = 0xffffff;
+                addr[(12 - y) * framebuffer->pitch / 4 + 8 * xoffset + yoffset + pixel] = 0xffffff;
             }
         }
     }
 }
 
-void write_string(char *str) {
+void write_string(char *str, size_t line) {
     for (size_t i = 0; i < strlen(str); ++i) {
-        write_char(str[i], i);
+        write_char(str[i], i, (line - 1) * framebuffer->pitch / 4 * 13);
     }
 }
 
@@ -213,7 +214,11 @@ void kmain(void) {
 
     framebuffer = framebuffer_request.response->framebuffers[0];
 
-    write_string("Hello kernel World!");
+    write_string("Hello kernel World!", 1);
+
+    init_gdt();
+
+    write_string("Loaded GDT", 2);
 
     hcf();
 }
