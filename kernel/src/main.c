@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include <limine.h>
 #include <gdt.h>
+#include <idt.h>
 
 __attribute__((used, section(".requests")))
 static volatile LIMINE_BASE_REVISION(2);
@@ -70,10 +71,11 @@ int memcmp(const void *s1, const void *s2, size_t n) {
     return 0;
 }
 
-// halt and catch fire function.
-static void hcf(void) {
+// halt and catch fire function
+static void hcf() {
+    asm volatile ("cli" ::: "memory");
     for (;;) {
-        asm ("hlt");
+        asm volatile ("hlt" ::: "memory");
     }
 }
 
@@ -176,9 +178,10 @@ unsigned char letters[95][13] = {
     {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x06, 0x8f, 0xf1, 0x60, 0x00, 0x00, 0x00} // ~
 };
 
+size_t linenum = 1;
 struct limine_framebuffer *framebuffer;
 
-size_t strlen(char *str) {
+size_t strlen(const char *str) {
     size_t len = 0;
     while (str[len++]);
     return len;
@@ -196,29 +199,33 @@ void write_char(unsigned char c, size_t xoffset, size_t yoffset) {
     }
 }
 
-void write_string(char *str, size_t line) {
+void write_string(const char *str) {
     for (size_t i = 0; i < strlen(str); ++i) {
-        write_char(str[i], i, (line - 1) * framebuffer->pitch / 4 * 13);
+        write_char(str[i], i, (linenum - 1) * framebuffer->pitch / 4 * 13);
     }
+
+    linenum += 1;
 }
 
-void kmain(void) {
+void kmain() {
     if (LIMINE_BASE_REVISION_SUPPORTED == false) {
         hcf();
     }
 
     if (framebuffer_request.response == NULL
-     || framebuffer_request.response->framebuffer_count < 1) {
+        || framebuffer_request.response->framebuffer_count < 1) {
         hcf();
     }
 
     framebuffer = framebuffer_request.response->framebuffers[0];
 
-    write_string("Hello kernel World!", 1);
+    write_string("Hello kernel World!");
 
     init_gdt();
+    write_string("Loaded GDT");
 
-    write_string("Loaded GDT", 2);
+    init_idt();
+    write_string("Loaded IDT");
 
     hcf();
 }
