@@ -73,7 +73,7 @@ int memcmp(const void *s1, const void *s2, size_t n) {
     return 0;
 }
 
-[[noreturn]] __attribute__((noreturn)) void kpanic() {
+[[noreturn]] void kpanic() {
     asm volatile ("cli" : : : "memory");
     for (;;) {
         asm volatile ("hlt" : : : "memory");
