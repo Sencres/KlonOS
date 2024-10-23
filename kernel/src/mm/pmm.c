@@ -15,7 +15,7 @@ static volatile struct limine_hhdm_request hhdm_request = {
 };
 
 uint64_t hhdm_offset = 0;
-uintptr_t *freelist = NULL;
+uint64_t *freelist = NULL;
 
 void init_pmm() {
     if (memmap_request.response == NULL || hhdm_request.response == NULL) {
@@ -39,12 +39,12 @@ void init_pmm() {
 
 void *pmm_alloc() {
     void *ret = (void *) (((uintptr_t) freelist) - hhdm_offset);
-    freelist = (uintptr_t *) (*freelist);
+    freelist = (uint64_t *) (*freelist);
 
     return ret;
 }
 
 void pmm_free(void *addr) {
-    *((uintptr_t *) (((uintptr_t) addr) + hhdm_offset)) = (uintptr_t) freelist;
+    *((uint64_t *) (((uintptr_t) addr) + hhdm_offset)) = (uintptr_t) freelist;
     freelist = addr;
 }

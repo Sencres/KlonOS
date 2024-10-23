@@ -5,7 +5,13 @@
 
 #include <stdint.h>
 
-struct interrupt_descriptor {
+#define IDT_ENTRY_PRESENT (1 << 7)
+#define IDT_DPL_USER (0b11 << 5)
+
+#define IDT_INTERRUPT_GATE 0b1110
+#define IDT_TRAP_GATE 0b1111
+
+struct idt_descriptor_t {
     uint16_t offset_lo;
     uint16_t selector;
     uint8_t ist;
@@ -15,33 +21,17 @@ struct interrupt_descriptor {
     uint32_t reserved;
 } __attribute__((packed));
 
-struct idtr {
+struct idtr_t {
     uint16_t size;
     uint64_t offset;
 } __attribute__((packed));
 
-struct cpu_status {
-    uint64_t r15;
-    uint64_t r14;
-    uint64_t r13;
-    uint64_t r12;
-    uint64_t r11;
-    uint64_t r10;
-    uint64_t r9;
-    uint64_t r8;
-    uint64_t rdi;
-    uint64_t rsi;
-    uint64_t rdx;
-    uint64_t rcx;
-    uint64_t rbx;
-    uint64_t rax;
-    uint64_t vector_num;
-    uint64_t err_code;
-    uint64_t iret_rip;
-    uint64_t iret_cs;
-    uint64_t iret_rflags;
-    uint64_t iret_rsp;
-    uint64_t iret_ss;
+struct interrupt_frame_t {
+    uint64_t r15, r14, r13, r12, r11, r10, r9, r8;
+    uint64_t rdi, rsi;
+    uint64_t rdx, rcx, rbx, rax;
+    uint64_t int_no, err_code;
+    uint64_t iret_rip, iret_cs, iret_rflags, iret_rsp, iret_ss;
 } __attribute__((packed));
 
 #define ISR(N) extern void isr_##N()

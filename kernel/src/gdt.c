@@ -1,20 +1,50 @@
 #include <stdint.h>
 #include <gdt.h>
 
-uint64_t gdt[4] = {
-    0x0000000000000000, // null
-    0x00AF9A000000FFFF, // kernel code
-    0x00AF92000000FFFF, // kernel data
-    0x00AFFA000000FFFF, // user code
+static struct gdt_descriptor_t gdt[] = {
+    {}, // null descriptor
+    {
+        .limit = 0xFFFF,
+        .base_lo = 0x0000,
+        .base_mid = 0x00,
+        .access = GDT_VALID_SEGMENT | GDT_EXECUTABLE | GDT_READ_WRITE,
+        .flags = (GDT_PAGE_GRANULITY | GDT_LONG_MODE) | 0x0F,
+        .base_hi = 0x00
+    },
+    {
+        .limit = 0xFFFF,
+        .base_lo = 0x0000,
+        .base_mid = 0x00,
+        .access = GDT_VALID_SEGMENT | GDT_READ_WRITE,
+        .flags = (GDT_PAGE_GRANULITY | GDT_LONG_MODE) | 0x0F,
+        .base_hi = 0x00
+    },
+    {
+        .limit = 0xFFFF,
+        .base_lo = 0x0000,
+        .base_mid = 0x00,
+        .access = GDT_VALID_SEGMENT | GDT_DPL_USER | GDT_EXECUTABLE | GDT_READ_WRITE,
+        .flags = (GDT_PAGE_GRANULITY | GDT_LONG_MODE) | 0x0F,
+        .base_hi = 0x00
+    },
+    {
+        .limit = 0xFFFF,
+        .base_lo = 0x0000,
+        .base_mid = 0x00,
+        .access = GDT_VALID_SEGMENT | GDT_DPL_USER | GDT_READ_WRITE,
+        .flags = (GDT_PAGE_GRANULITY | GDT_LONG_MODE) | 0x0F,
+        .base_hi = 0x00
+    },
+    {}, {} // tss
 };
 
 void init_gdt() {
     asm volatile ("cli" : : : "memory");
 
-    struct gdtr gdtptr = {
-        .size = 31,
+    struct gdtr_t gdtr = {
+        .size = sizeof(gdt) - 1,
         .offset = (uint64_t) &gdt
     };
 
-    flush_gdt(&gdtptr);
+    flush_gdt(&gdtr);
 }
