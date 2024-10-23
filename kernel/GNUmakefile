@@ -19,7 +19,7 @@ $(call USER_VARIABLE,KLD,ld)
 $(call USER_VARIABLE,KCFLAGS,-g -O2 -pipe)
 
 # User controllable C preprocessor flags. We set none by default.
-$(call USER_VARIABLE,KCPPFLAGS,)
+$(call USER_VARIABLE,KCPPFLAGS,-I src/include)
 
 # User controllable nasm flags.
 $(call USER_VARIABLE,KNASMFLAGS,-F dwarf -g)
@@ -31,7 +31,7 @@ $(call USER_VARIABLE,KLDFLAGS,)
 override KCFLAGS += \
     -Wall \
     -Wextra \
-    -std=gnu11 \
+    -std=gnu23 \
     -ffreestanding \
     -fno-stack-protector \
     -fno-stack-check \

@@ -18,6 +18,10 @@ clean:
 run:
 	qemu-system-x86_64 -cdrom KlonOS.iso -boot d -machine q35 -S -s -serial file:serial.log -monitor stdio
 
+.PHONY: log
+log:
+	qemu-system-x86_64 -cdrom KlonOS.iso -boot d -machine q35 -S -s -serial file:serial.log -monitor stdio -D log.txt -d int -M smm=off -no-reboot -no-shutdown
+
 .PHONY: debug
 debug:
 	gdb -x gdbcommands.txt

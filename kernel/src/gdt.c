@@ -8,9 +8,8 @@ uint64_t gdt[4] = {
     0x00AFFA000000FFFF, // user code
 };
 
-// stopped working because gdt was on the stack, now works again
 void init_gdt() {
-    asm volatile ("cli" ::: "memory");
+    asm volatile ("cli" : : : "memory");
 
     struct gdtr gdtptr = {
         .size = 31,

@@ -15,51 +15,39 @@ void set_idt_entry(uint8_t vector, void *handler, uint16_t selector, uint8_t gat
     idt[vector].reserved = 0;
 }
 
-extern void write_string(char *);
 struct cpu_status *handler(struct cpu_status *ctx) {
-    switch (ctx->vector_num) {
-    case 0:
-        write_string("Division by zero");
-        break;
-    case 8:
-        write_string("Double fault");
-        break;
-    case 13:
-        write_string("General protection fault");
-        break;
-    case 14:
-        write_string("Page fault");
-        break;
-    default:
-        write_string("Other exception");
+    // stub
+    asm volatile ("cli" : : : "memory");
+    for (;;) {
+        asm volatile ("hlt" : : : "memory");
     }
 
-    return ctx;
+    __builtin_unreachable();
 }
 
 void init_idt() {
-    asm volatile ("cli" ::: "memory");
+    asm volatile ("cli" : : : "memory");
 
-    set_idt_entry(0, isr_0, 0x0008, 0xF);
-    set_idt_entry(1, isr_1, 0x0008, 0xF);
-    set_idt_entry(2, isr_2, 0x0008, 0xF);
-    set_idt_entry(3, isr_3, 0x0008, 0xF);
-    set_idt_entry(4, isr_4, 0x0008, 0xF);
-    set_idt_entry(5, isr_5, 0x0008, 0xF);
-    set_idt_entry(6, isr_6, 0x0008, 0xF);
-    set_idt_entry(7, isr_7, 0x0008, 0xF);
-    set_idt_entry(8, isr_8, 0x0008, 0xF);
-    set_idt_entry(10, isr_10, 0x0008, 0xF);
-    set_idt_entry(11, isr_11, 0x0008, 0xF);
-    set_idt_entry(12, isr_12, 0x0008, 0xF);
-    set_idt_entry(13, isr_13, 0x0008, 0xF);
-    set_idt_entry(14, isr_14, 0x0008, 0xF);
-    set_idt_entry(16, isr_16, 0x0008, 0xF);
-    set_idt_entry(17, isr_17, 0x0008, 0xF);
-    set_idt_entry(18, isr_18, 0x0008, 0xF);
-    set_idt_entry(19, isr_19, 0x0008, 0xF);
-    set_idt_entry(20, isr_20, 0x0008, 0xF);
-    set_idt_entry(21, isr_21, 0x0008, 0xF);
+    set_idt_entry(0, isr_0, 0x0008, 0xE);
+    set_idt_entry(1, isr_1, 0x0008, 0xE);
+    set_idt_entry(2, isr_2, 0x0008, 0xE);
+    set_idt_entry(3, isr_3, 0x0008, 0xE);
+    set_idt_entry(4, isr_4, 0x0008, 0xE);
+    set_idt_entry(5, isr_5, 0x0008, 0xE);
+    set_idt_entry(6, isr_6, 0x0008, 0xE);
+    set_idt_entry(7, isr_7, 0x0008, 0xE);
+    set_idt_entry(8, isr_8, 0x0008, 0xE);
+    set_idt_entry(10, isr_10, 0x0008, 0xE);
+    set_idt_entry(11, isr_11, 0x0008, 0xE);
+    set_idt_entry(12, isr_12, 0x0008, 0xE);
+    set_idt_entry(13, isr_13, 0x0008, 0xE);
+    set_idt_entry(14, isr_14, 0x0008, 0xE);
+    set_idt_entry(16, isr_16, 0x0008, 0xE);
+    set_idt_entry(17, isr_17, 0x0008, 0xE);
+    set_idt_entry(18, isr_18, 0x0008, 0xE);
+    set_idt_entry(19, isr_19, 0x0008, 0xE);
+    set_idt_entry(20, isr_20, 0x0008, 0xE);
+    set_idt_entry(21, isr_21, 0x0008, 0xE);
 
     struct idtr idtptr = {
         .size = sizeof(idt) - 1,
@@ -68,5 +56,5 @@ void init_idt() {
 
     flush_idt(&idtptr);
 
-    asm volatile ("sti" ::: "memory");
+    asm volatile ("sti" : : : "memory");
 }
