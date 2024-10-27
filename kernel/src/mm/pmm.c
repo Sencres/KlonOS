@@ -4,7 +4,7 @@
 
 extern struct limine_memmap_response *memmap_response;
 extern uint64_t hhdm_offset;
-uint64_t *freelist = NULL;
+uintptr_t freelist = 0;
 
 void init_pmm() {
     for (size_t i = 0; i < memmap_response->entry_count; ++i) {
@@ -21,17 +21,17 @@ void init_pmm() {
 }
 
 void *pmm_alloc() {
-    if (freelist == NULL) {
+    if (freelist == 0) {
         kpanic();
     }
 
-    void *ret = freelist;
-    freelist = (uint64_t *) (*((uint64_t *) (((uintptr_t) freelist) + hhdm_offset)));
+    void *ret = (void *) freelist;
+    freelist = *((uint64_t *) (freelist + hhdm_offset));
 
     return ret;
 }
 
 void pmm_free(void *addr) {
-    *((uint64_t *) (((uintptr_t) addr) + hhdm_offset)) = (uintptr_t) freelist;
-    freelist = addr;
+    *((uint64_t *) (((uintptr_t) addr) + hhdm_offset)) = freelist;
+    freelist = (uintptr_t) addr;
 }
