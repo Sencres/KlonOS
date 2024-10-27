@@ -7,7 +7,7 @@ static struct gdt_descriptor_t gdt[] = {
         .limit = 0xFFFF,
         .base_lo = 0x0000,
         .base_mid = 0x00,
-        .access = GDT_VALID_SEGMENT | GDT_EXECUTABLE | GDT_READ_WRITE,
+        .access = GDT_VALID_SEGMENT | GDT_CODE_DATA_SELECTOR | GDT_EXECUTABLE | GDT_READ_WRITE,
         .flags = (GDT_PAGE_GRANULITY | GDT_LONG_MODE) | 0x0F,
         .base_hi = 0x00
     },
@@ -15,7 +15,7 @@ static struct gdt_descriptor_t gdt[] = {
         .limit = 0xFFFF,
         .base_lo = 0x0000,
         .base_mid = 0x00,
-        .access = GDT_VALID_SEGMENT | GDT_READ_WRITE,
+        .access = GDT_VALID_SEGMENT | GDT_CODE_DATA_SELECTOR | GDT_READ_WRITE,
         .flags = (GDT_PAGE_GRANULITY | GDT_LONG_MODE) | 0x0F,
         .base_hi = 0x00
     },
@@ -23,7 +23,7 @@ static struct gdt_descriptor_t gdt[] = {
         .limit = 0xFFFF,
         .base_lo = 0x0000,
         .base_mid = 0x00,
-        .access = GDT_VALID_SEGMENT | GDT_DPL_USER | GDT_EXECUTABLE | GDT_READ_WRITE,
+        .access = GDT_VALID_SEGMENT | GDT_CODE_DATA_SELECTOR | GDT_DPL_USER | GDT_EXECUTABLE | GDT_READ_WRITE,
         .flags = (GDT_PAGE_GRANULITY | GDT_LONG_MODE) | 0x0F,
         .base_hi = 0x00
     },
@@ -31,7 +31,7 @@ static struct gdt_descriptor_t gdt[] = {
         .limit = 0xFFFF,
         .base_lo = 0x0000,
         .base_mid = 0x00,
-        .access = GDT_VALID_SEGMENT | GDT_DPL_USER | GDT_READ_WRITE,
+        .access = GDT_VALID_SEGMENT | GDT_CODE_DATA_SELECTOR | GDT_DPL_USER | GDT_READ_WRITE,
         .flags = (GDT_PAGE_GRANULITY | GDT_LONG_MODE) | 0x0F,
         .base_hi = 0x00
     },

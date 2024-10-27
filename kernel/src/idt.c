@@ -15,7 +15,7 @@ void set_idt_entry(uint8_t vector, void *handler, uint16_t selector, uint8_t fla
     idt[vector].reserved = 0;
 }
 
-struct cpu_status *handler(struct cpu_status *ctx) {
+struct cpu_status *handler(__attribute__((unused)) struct cpu_status *ctx) {
     // stub
     asm volatile ("cli" : : : "memory");
     for (;;) {

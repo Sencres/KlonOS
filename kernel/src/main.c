@@ -6,6 +6,7 @@
 #include <gdt.h>
 #include <idt.h>
 #include <pmm.h>
+#include <vmm.h>
 
 __attribute__((used, section(".requests")))
 static volatile LIMINE_BASE_REVISION(2);
@@ -13,7 +14,25 @@ static volatile LIMINE_BASE_REVISION(2);
 __attribute__((used, section(".requests")))
 static volatile struct limine_framebuffer_request framebuffer_request = {
     .id = LIMINE_FRAMEBUFFER_REQUEST,
-    .revision = 0
+    .revision = 2
+};
+
+__attribute__((used, section(".requests")))
+static volatile struct limine_memmap_request memmap_request = {
+    .id = LIMINE_MEMMAP_REQUEST,
+    .revision = 2
+};
+
+__attribute__((used, section(".requests")))
+static volatile struct limine_hhdm_request hhdm_request = {
+    .id = LIMINE_HHDM_REQUEST,
+    .revision = 2
+};
+
+__attribute((used, section(".requests")))
+static volatile struct limine_kernel_address_request kernel_address_request = {
+    .id = LIMINE_KERNEL_ADDRESS_REQUEST,
+    .revision = 2
 };
 
 __attribute__((used, section(".requests_start_marker")))
@@ -82,6 +101,10 @@ int memcmp(const void *s1, const void *s2, size_t n) {
 
 size_t linenum = 0;
 struct limine_framebuffer *framebuffer;
+struct limine_memmap_response *memmap_response;
+uint64_t hhdm_offset = 0;
+uint64_t kernel_phys_addr;
+uint64_t kernel_virt_addr;
 
 size_t strlen(const char *str) {
     size_t len = 0;
@@ -119,7 +142,18 @@ void kmain() {
         kpanic();
     }
 
+    if (memmap_request.response == NULL
+        || hhdm_request.response == NULL
+        || kernel_address_request.response == NULL) {
+        kpanic();
+    }
+
     framebuffer = framebuffer_request.response->framebuffers[0];
+
+    memmap_response = memmap_request.response;
+    hhdm_offset = hhdm_request.response->offset;
+    kernel_phys_addr = kernel_address_request.response->physical_base;
+    kernel_virt_addr = kernel_address_request.response->virtual_base;
 
     write_string("Hello kernel World!");
 
@@ -131,6 +165,9 @@ void kmain() {
 
     init_pmm();
     write_string("Initialized PMM");
+
+    init_vmm();
+    write_string("Initialized VMM");
 
     kpanic();
 }

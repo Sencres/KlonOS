@@ -41,6 +41,7 @@ ISR(11); ISR(12); ISR(13); ISR(14); ISR(16);
 ISR(17); ISR(18); ISR(19); ISR(20); ISR(21);
 
 extern void flush_idt(void *);
+
 void set_idt_entry(uint8_t, void *, uint16_t, uint8_t);
 struct cpu_status *handler(struct cpu_status *);
 void init_idt();

@@ -7,7 +7,7 @@
 
 #define GDT_VALID_SEGMENT (1 << 7)
 #define GDT_DPL_USER (0b11 << 5)
-#define GDT_SYSTEM_SELECTOR (1 << 4)
+#define GDT_CODE_DATA_SELECTOR (1 << 4)
 #define GDT_EXECUTABLE (1 << 3)
 #define GDT_READ_WRITE (1 << 1)
 
@@ -29,6 +29,7 @@ struct gdtr_t {
 } __attribute__((packed));
 
 extern void flush_gdt(void *);
+
 void init_gdt();
 
 #endif
