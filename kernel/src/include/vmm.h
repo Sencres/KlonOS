@@ -6,6 +6,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#define ADDR_MASK ((uint64_t) 0x000FFFFFFFFFF000)
+
 #define VMM_TABLE_ENTRY_READ_WRITE (1 << 1)
 #define VMM_TABLE_ENTRY_PRESENT (1 << 0)
 

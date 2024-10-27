@@ -28,7 +28,7 @@ uint64_t *next_table_addr_new(uint64_t *table, size_t index, uint8_t flags) {
         table[index] = ((uintptr_t) new_table) | flags;
     }
 
-    return (uint64_t *) (table[index] & ~0xFFF);
+    return (uint64_t *) (table[index] & ADDR_MASK);
 }
 
 void map(uint64_t virt_addr, uint64_t phys_addr, uint8_t flags) {
@@ -46,7 +46,7 @@ void map(uint64_t virt_addr, uint64_t phys_addr, uint8_t flags) {
 
 uint64_t *next_table_addr(uint64_t *table, size_t index) {
     if (table != NULL && (table[index] & VMM_TABLE_ENTRY_PRESENT) && (table[index] & VMM_TABLE_ENTRY_READ_WRITE)) {
-        return (uint64_t *) (table[index] & ~0xFFF);
+        return (uint64_t *) (table[index] & ADDR_MASK);
     }
 
     return NULL;
